@@ -1,5 +1,12 @@
 # 手写模拟 HandWrite Sim
 
+[![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![PySide6](https://img.shields.io/badge/PySide6-6.7%2B-41CD52?logo=qt&logoColor=white)](https://doc.qt.io/qtforpython-6/)
+[![handright](https://img.shields.io/badge/render-handright-8e44ad)](https://github.com/Gsllchb/Handright)
+[![Platform](https://img.shields.io/badge/platform-Windows-0078D6?logo=windows&logoColor=white)](https://www.microsoft.com/windows)
+[![Version](https://img.shields.io/badge/version-v2.0-2ea44f)](https://github.com/ljcddg/handwrite-sim/releases)
+[![License](https://img.shields.io/github/license/ljcddg/handwrite-sim)](LICENSE)
+
 > 把任意文字渲染成以假乱真的手写文档图片 —— 自定义字体、实时预览、一键批量导出。
 
 本项目在原版「手写模拟」的基础上完成了 **界面与架构的全面重构**：从绝对定位的固定窗口改成可缩放的 Qt 布局界面，生成过程移入后台线程，并新增字体管理、实时预览、项目预设、会话记忆等能力。渲染核心仍由 [handright](https://github.com/Gsllchb/Handright) 提供。
@@ -44,6 +51,16 @@
 | 参数 | 18 个参数平铺，手输数字 | 基础 / 高级两级 + 紧凑多列，SpinBox 防非法输入 |
 | 错误处理 | 裸 `except` 静默吞异常 | 统一校验 + 明确报错弹窗，按钮状态保证正确 |
 | 打包 | 依赖外部背景图 | 单文件 exe，字体与预设首次运行自动落到同级目录 |
+
+## 技术栈
+
+| 分层 | 技术 |
+|------|------|
+| 界面 | PySide6 / Qt 6（布局管理 + QSS 主题） |
+| 渲染 | [handright](https://github.com/Gsllchb/Handright)（笔画抖动与排版） |
+| 图像 | Pillow（背景读取、页面合成、格式转换） |
+| 打包 | PyInstaller（单文件 exe + 资源随包） |
+| CI | GitHub Actions（推送 `release` 分支自动构建发布） |
 
 ## 快速开始
 
