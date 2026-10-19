@@ -79,6 +79,8 @@ pyinstaller -F main.py --windowed --noconfirm -i "assets/ui/3d.ico" --add-data "
 >
 > 若打包环境报 `ordlookup has no attribute ordLookup`，说明本机 `ordlookup` 依赖损坏，可执行 `pip install --force-reinstall ordlookup` 修复。
 
+也可以交给 CI：推送到 `release` 分支（或在 Actions 页面手动触发）后，GitHub Actions 会自动构建并发布 `handwrite-sim-win64.zip`，配置见 `.github/workflows/release.yml`。
+
 ## 项目结构
 
 ```text

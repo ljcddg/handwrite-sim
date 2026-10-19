@@ -3,50 +3,56 @@ name: Build and Release
 on:
   push:
     branches:
-      - release # 当推送至release分支时触发
+      - release # 推送到 release 分支时触发
+  workflow_dispatch: # 也可以在 Actions 页面手动触发
+
+permissions:
+  contents: write
 
 jobs:
   build-and-release:
-    runs-on: windows-latest # 使用Windows环境进行构建
+    runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Install requirements.txt
-      run: pip install -r requirements.txt
-    - name: Install PyInstaller
-      run: pip install pyinstaller
-    - name: Build EXE with PyInstaller
-      run: pyinstaller -F main.py --windowed -i "assets/ui/3d.ico" --add-data "assets/ui/night.png:assets/ui" -n "手写模拟"
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # 打包EXE和UI文件夹为ZIP
-    - name: Package EXE and assets/ui folder
-      run: |
-        Copy-Item -Path "assets/ui" -Destination "dist" -Recurse
-        cd dist
-        7z a ./release_package.zip 手写模拟.exe ui # 将资源一并打包
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-   
-    # 创建GitHub Release并上传ZIP文件
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 自动授权的Token
-      with:
-        tag_name: ${{ github.run_number }} # 可以根据需要修改tag命名规则
-        release_name: Release ${{ github.run_number }}
-        draft: false
-        prerelease: false
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
 
-    # 上传ZIP文件为Release Asset
-    - name: Upload Release Asset
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # 从上一步骤中获取上传URL
-        asset_path: dist/release_package.zip
-        asset_name: Release-${{ github.run_number }}.zip
-        asset_content_type: application/zip
+      - name: Build EXE with PyInstaller
+        run: >
+          pyinstaller -F main.py --windowed --noconfirm
+          -i "assets/ui/3d.ico"
+          --add-data "assets/ui/3d.ico;assets/ui"
+          --add-data "Fonts;Fonts"
+          --add-data "background;background"
+          --add-data "presets;presets"
+          -n "手写模拟"
+
+      - name: Package release archive
+        run: |
+          Copy-Item -Path "Fonts" -Destination "dist" -Recurse -Force
+          Copy-Item -Path "presets" -Destination "dist" -Recurse -Force
+          Compress-Archive -Path "dist/手写模拟.exe", "dist/Fonts", "dist/presets" -DestinationPath "dist/handwrite-sim-win64.zip" -Force
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: handwrite-sim-win64
+          path: dist/handwrite-sim-win64.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Build ${{ github.run_number }}
+          files: dist/handwrite-sim-win64.zip
+          generate_release_notes: true
