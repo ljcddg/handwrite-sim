@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "params": {
+    "red": 0,
+    "green": 0,
+    "blue": 0,
+    "font": "Fonts/云烟体.ttf",
+    "background": "background/white-A4.jpeg",
+    "word_spacing": 15,
+    "word_spacing_sigma": 3,
+    "line_spacing": 150,
+    "line_spacing_sigma": 6,
+    "font_size": 100,
+    "font_size_sigma": 20,
+    "perturb_x_sigma": 4,
+    "perturb_y_sigma": 4,
+    "perturb_theta_sigma": 0.05,
+    "top_margin": 100,
+    "left_margin": 100,
+    "right_margin": 100,
+    "bottom_margin": 100
+  }
+}
